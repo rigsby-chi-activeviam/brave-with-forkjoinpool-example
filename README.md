@@ -1,14 +1,25 @@
-## WebMVC 4 Example
+## Brave with ForkJoinPool Example
 
-### ExampleInitializer
+The example demonstrates a way to use Brave with `ForkJoinPool`. This example is created on top of the [brave-webmvc-example](https://github.com/openzipkin/brave-webmvc-example)
 
-Instead of a web.xml file, this uses a Servlet 3.0
-`ServletContainerInitializer` to setup the app and tracing of it.
+### Implementation
+The example demonstrates a way to use Brave with `ForkJoinPool` by extending the `CurrentTraceContext`. This project mainly introduce the following classes:  
 
-`Initializer` is indirectly invoked by `SpringServletContainerInitializer`,
-which is in the classpath. This sets up the following:
+`ATraceableForkJoinTask`: Wrapper of `ForkJoinTask`  
+  
+`ATraceableForkJoinPool`: Extending `ForkJoinPool` with task wrapping inside methods like `sumbit` and `invoke`  
+  
+`CustomizedThreadLocalCurrentTraceContext`: Extending `CurrentTraceContext` and provides a `getTraceableForkJoinPool` method, which returns a new traceable `ForkJoinPool` instance.  
+  
 
-*   brave.webmvc.Frontend and Backend : Rest controllers with no tracing configuration
-*   brave.webmvc.TracingConfiguration : This adds tracing by configuring the tracer, server and client tracing interceptors.
+### Starting the Application
 
+Execute below, then access http://localhost:8080/. This will call the service and produce traced logs.
+```
+mvn jetty:run
+```
 
+### Limitation
+
+Trace context can be propagated only if a task is submitted to the pool (e.g. `pool.submit(task)`). If a task forks, the trace will be propagated (e.g. `task.fork()`).
+  
