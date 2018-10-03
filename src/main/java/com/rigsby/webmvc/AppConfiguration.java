@@ -8,8 +8,6 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /** The application is simple, it only uses Web MVC and a {@linkplain RestTemplate}. */
 @EnableWebMvc
-@EnableAspectJAutoProxy(proxyTargetClass=true)
-@ComponentScan(basePackages="brave.webmvc")
 public class AppConfiguration {
   @Bean RestTemplate restTemplate() {
     return new RestTemplate();
